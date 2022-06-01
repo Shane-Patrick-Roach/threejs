@@ -47,8 +47,20 @@ const grassAmbientOcclusionTexture = textureLoader.load('/textures/grass/ambient
 const grassNormalTexture = textureLoader.load('/textures/grass/normal.jpg')
 const grassRoughnessTexture = textureLoader.load('/textures/grass/roughness.jpg')
 
+grassColorTexture.repeat.set(8, 8)
+grassAmbientOcclusionTexture.repeat.set(8, 8)
+grassNormalTexture.repeat.set(8, 8)
+grassRoughnessTexture.repeat.set(8, 8)
 
+grassColorTexture.wrapS = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping
+grassNormalTexture.wrapS = THREE.RepeatWrapping
+grassRoughnessTexture.wrapS = THREE.RepeatWrapping
 
+grassColorTexture.wrapT = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping
+grassNormalTexture.wrapT = THREE.RepeatWrapping
+grassRoughnessTexture.wrapT = THREE.RepeatWrapping
 
 
 
@@ -150,6 +162,7 @@ for (let i = 0; i < 50; i++) {
     grave.rotation.y = (Math.random() - 0.5) * 0.4
     grave.rotation.z = (Math.random() - 0.5) * 0.6
     grave.position.set(x,0.3,z);
+    grave.castShadow = true;
     graves.add(grave);
 }
 
@@ -193,6 +206,16 @@ scene.add(moonLight)
 const doorLight = new THREE.PointLight('#ff7d46', 1, 7);
 doorLight.position.set(0,2.2,2.7);
 house.add(doorLight);
+
+
+const ghost1 = new THREE.PointLight('#ff00ff', 2, 3)
+scene.add(ghost1);
+
+const ghost2 = new THREE.PointLight('#0000ff', 5, 3)
+scene.add(ghost2);
+
+const ghost3 = new THREE.PointLight('#ff0000', 2, 3)
+scene.add(ghost3);
 
 /**
  * Sizes
@@ -239,6 +262,54 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor('#262837')
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+/**
+ * Shadows
+ */
+renderer.shadowMap.enabled = true;
+
+moonLight.castShadow = true;
+doorLight.castShadow = true;
+ghost1.castShadow = true;
+ghost2.castShadow = true;
+
+walls.castShadow = true;
+
+bush1.castShadow = true;
+bush2.castShadow = true;
+bush3.castShadow = true;
+
+floor.receiveShadow = true;
+
+
+moonLight.shadow.mapSize.width = 256
+moonLight.shadow.mapSize.height = 256
+moonLight.shadow.camera.far = 15
+
+// ...
+
+doorLight.shadow.mapSize.width = 256
+doorLight.shadow.mapSize.height = 256
+doorLight.shadow.camera.far = 7
+
+// ...
+
+ghost1.shadow.mapSize.width = 256
+ghost1.shadow.mapSize.height = 256
+ghost1.shadow.camera.far = 7
+
+// ...
+
+ghost2.shadow.mapSize.width = 256
+ghost2.shadow.mapSize.height = 256
+ghost2.shadow.camera.far = 7
+
+// ...
+
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 7
 
 /**
  * Animate
@@ -247,6 +318,22 @@ const clock = new THREE.Clock()
 
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
+
+
+    // Update Ghost Animation
+    const ghost1Angle = elapsedTime;
+    ghost1.position.x = Math.cos(ghost1Angle) * 4;
+    ghost1.position.z = Math.sin(ghost1Angle) * 4;
+    ghost1.position.y = 2 + Math.sin(ghost1Angle) * 3;
+
+
+    const ghost2Angle = elapsedTime * 0.5;
+    ghost2.position.x = Math.cos(ghost2Angle) * 5;
+    ghost2.position.z = Math.sin(ghost2Angle) * 2;
+    ghost2.position.y = 2 + Math.sin(ghost2Angle) * 4 + Math.sin(ghost2Angle) * 4;
+
+
+
 
     // Update controls
     controls.update()
