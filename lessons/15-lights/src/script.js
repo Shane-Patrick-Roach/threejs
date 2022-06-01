@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
+import { DirectionalLight } from 'three'
 
 /**
  * Base
@@ -26,16 +27,38 @@ const scene = new THREE.Scene()
 // scene.add(directionalLight)
 
 const hemisphericLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.5)
+hemisphericLight.castShadow = true;
 scene.add(hemisphericLight)
+
 
 const pointLight = new THREE.PointLight(0xff5500, 0.5)
 pointLight.position.set(0,2,2);
-// pointLight.position.y = 3
-// pointLight.position.z = 4
+pointLight.castShadow = true;
+pointLight.shadow.mapSize.width = 512 * 2
+pointLight.shadow.mapSize.height = 512 * 2
+pointLight.shadow.camera.near = 1
+
+
+const pointLightCameraHelper = new THREE.CameraHelper
+
+(pointLight.shadow.camera)
+pointLightCameraHelper.visible = false;
+
+scene.add(pointLightCameraHelper)
 scene.add(pointLight)
+
 
 gui.add(pointLight, 'intensity').min(0).max(1)
 
+
+// const spotLight = new THREE.SpotLight(0xfffff, 0.4, 10, Math.PI * 0.3 )
+// spotLight.castShadow = true
+
+// const spotLightCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera)
+// spotLightCameraHelper.visible = false;
+
+// scene.add(spotLightCameraHelper)
+// scene.add(spotLight)
 /**
  * Objects
  */
@@ -49,17 +72,20 @@ const sphere = new THREE.Mesh(
     material
 )
 sphere.position.x = - 1.5
+sphere.castShadow = true;
 
 const cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.75, 0.75, 0.75),
     material
 )
+cube.castShadow = true;
 
 const torus = new THREE.Mesh(
     new THREE.TorusGeometry(0.3, 0.2, 32, 64),
     material
 )
 torus.position.x = 1.5
+torus.castShadow = true;
 
 const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(5, 5),
@@ -67,6 +93,7 @@ const plane = new THREE.Mesh(
 )
 plane.rotation.x = - Math.PI * 0.4
 plane.position.y = - 0.65
+plane.receiveShadow = true;
 
 
 scene.add(sphere, cube, torus, plane)
@@ -126,6 +153,8 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true;
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 /**
  * Animate
@@ -138,8 +167,11 @@ const tick = () =>
 
     // Update objects
     sphere.rotation.y = 0.3 * elapsedTime
+    sphere.position.x = Math.cos(elapsedTime)
+    sphere.position.z = Math.sin(elapsedTime)
+    sphere.position.y = Math.abs(Math.sin(elapsedTime * 3))
     cube.rotation.y = 0.5 * elapsedTime
-    torus.rotation.y = 0.1 * elapsedTime
+    torus.rotation.z = 0.1 * elapsedTime
 
     sphere.rotation.x = 0.15 * elapsedTime
     cube.rotation.x = 0.15 * elapsedTime
