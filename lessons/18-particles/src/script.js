@@ -24,6 +24,7 @@ const textureLoader = new THREE.TextureLoader()
 
 
 
+
 const parameters = {}
 parameters.count = 10000;
 parameters.size = 0.01;
@@ -149,7 +150,10 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () => {
+
+window.addEventListener('resize', () =>
+{
+
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -189,6 +193,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const clock = new THREE.Clock()
 
+
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
@@ -196,6 +201,7 @@ const tick = () => {
     // geometry.position.y = elapsedTime;
 
     particles.rotation
+
 
     // Update controls
     controls.update()
